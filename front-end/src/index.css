@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* ESTÉTICA APPLE LIQUID GLASS - ORANGE EDITION */
+    color-scheme: dark; /* Para o vidro branco contrastar bem */
+
+    --bg-base: #000000;
+
+    /* Paleta Líquida Vibrante (Saturada para brilhar atrás do vidro) */
+    --bg-liquid-start: #fb923c; /* Orange 400 */
+    --bg-liquid-mid: #f97316;   /* Orange 500 */
+    --bg-liquid-end: #78350f;   /* Amber 900 (Profundidade) */
+
+    /* Marca (Laranja Puro Apple-like) */
+    --brand-primary: #f97316;     
+    --brand-primary-hover: #ea580c;
+
+    /* Textos (Branco puro para ler sobre o Laranja vibrante) */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-muted: rgba(255, 255, 255, 0.4);
+
+    /* O SEGREDO DO VIDRO LÍQUIDO (Extremamente Translúcido) */
+    --surface-primary: rgba(255, 255, 255, 0.03); /* Quase invisível */
+    --surface-secondary: rgba(0, 0, 0, 0.2);     /* Inputs */
+    
+    /* SPECULAR HIGHLIGHT: Borda finíssima e branca */
+    --border-default: rgba(255, 255, 255, 0.08);
+  }
+}
+
+@theme {
+  --color-brand: var(--brand-primary);
+  --color-brand-hover: var(--brand-primary-hover);
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-system-text-primary: var(--text-primary);
+  --color-system-text-secondary: var(--text-secondary);
+  --color-system-text-muted: var(--text-muted);
+  --color-system-border-default: var(--border-default);
+  
+  /* Gradiente base, mas usaremos formas orgânicas no JSX */
+  --background-image-gradient-main: linear-gradient(135deg, var(--bg-liquid-start), var(--bg-liquid-mid), var(--bg-liquid-end));
+}
