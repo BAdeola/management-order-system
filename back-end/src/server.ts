@@ -1,6 +1,7 @@
 import express  from "express";
 import dotenv from 'dotenv';
 import { poolPromise } from './config/db.js';
+import orderRoutes from "./routes/order.routes.js";
 
 dotenv.config();
 
@@ -14,9 +15,11 @@ app.get('/', (req, res) => {
     res.send("API Baff's está online! 🚀")
 });
 
+// Prefixo global para as rotas de pedidos
+app.use('/orders', orderRoutes);
+
 app.listen(PORT, async () => {
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-
     try {
         await poolPromise;
     } catch (err) {
