@@ -15,7 +15,7 @@ export const StatusCard = ({ label, value }: StatusCardProps) => (
 
 export const TabelaPedidos = ({ orders }: { orders: Order[] }) => {
   return (
-    <div className="bg-surface-primary border border-system-border-default backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-sm">
+    <div className="bg-surface-primary border border-system-border-default backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-system-border-default">
