@@ -18,5 +18,5 @@ export interface StatusCardProps {
 export interface TabelaPedidosProps {
   orders: Order[];
   onMakeOrder: (order: Order) => void;
-  onDeclineOrder: (vendorCode: number) => void;
+  onDeclineOrder: (order: Order) => void;
 }

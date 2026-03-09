@@ -1,48 +1,65 @@
-// src/features/dashboard/DashboardFeature.tsx
 import { useDashboardData } from "./hooks/useDashboardData";
 import { TabelaPedidos } from "./components/TabelaPedidos/TabelaPedidos";
 import { StatusCard } from "./components/StatusCard/StatusCard";
 import { TabelaItens } from "./components/TabelaItens/TabelaItens";
-import { useState } from "react";
-import { useOrderItems } from "./hooks/useOrderItems";
+import { ConfirmationModal } from "../../components/ConfirmationModal/ConfirmationModal";
 
 export const DashboardFeature = () => {
-  const { data, loading, error } = useDashboardData();
-  const [selectedVendor, setSelectedVendor] = useState<any>(null);
-  const { items, setItems, loading: loadingItems } = useOrderItems(selectedVendor?.vendorCode);
+  const {
+    data, loading, error, loadingItems, items, stats,
+    selectedVendor, setSelectedVendor,
+    vendorToDecline, setVendorToDecline,
+    handleUpdateQty, handleConfirmDecline, handleSendOrder
+  } = useDashboardData();
 
-  if (loading) return <div className="p-10 text-brand animate-pulse">Carregando dados do servidor...</div>;
-  if (error) return <div className="p-10 text-red-500">Erro: {error}</div>;
+  if (loading) return (
+    <div className="p-10 text-brand animate-pulse font-black uppercase tracking-widest text-center">
+      Sincronizando com SQL Server 2005...
+    </div>
+  );
 
-  // Calculando métricas simples para os StatusCards
-  const totalFornecedores = data.length;
-  const pedidosAbertos = data.filter(o => o.orderStatus === 'ABERTO').length;
-  
-
-  const handleUpdateQty = (index: number, qty: number) => {
-    const newItems = [...items];
-    newItems[index].quantity = qty;
-    setItems(newItems);
-  };
+  if (error) return (
+    <div className="p-10 text-red-500 font-bold border border-red-500/20 rounded-xl bg-red-500/5">
+      Falha na conexão: {error}
+    </div>
+  );
 
   return (
-    <div className="flex flex-col gap-8 p-8">
+    <div className="flex flex-col gap-8 p-8 min-h-screen bg-transparent">
+      {/* 1. Métricas Globais */}
       <div className="flex gap-4">
-        <StatusCard label="Fornecedores Hoje" value={totalFornecedores.toString()} />
-        <StatusCard label="Pedidos em Aberto" value={pedidosAbertos.toString()} />
+        <StatusCard label="Fornecedores Liberados" value={stats.total} />
+        <StatusCard label="Ações Concluídas" value={stats.concluidos} />
+        <StatusCard label="Aguardando" value={stats.pendentes} />
       </div>
 
+      {/* 2. Tabela de Trabalho */}
       <TabelaPedidos 
         orders={data} 
-        onMakeOrder={(order) => setSelectedVendor(order)} 
+        onMakeOrder={setSelectedVendor} 
+        onDeclineOrder={setVendorToDecline}
       />
 
+      {/* 3. Modal de Pedido (Quantidades) */}
       <TabelaItens
         isOpen={!!selectedVendor}
+        isLoading={loadingItems}
         vendorName={selectedVendor?.vendorName}
         items={items}
         onClose={() => setSelectedVendor(null)}
         onSave={handleUpdateQty}
+        onConfirmSend={handleSendOrder}
+      />
+
+      {/* 4. Modal de Confirmação (Recusa) */}
+      <ConfirmationModal 
+        isOpen={!!vendorToDecline}
+        title="Confirmar Recusa"
+        message={`Deseja marcar "${vendorToDecline?.vendorName}" como SEM PEDIDO hoje?`}
+        confirmText="Confirmar Recusa"
+        cancelText="Voltar"
+        onClose={() => setVendorToDecline(null)}
+        onConfirm={handleConfirmDecline}
       />
     </div>
   );

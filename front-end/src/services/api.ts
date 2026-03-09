@@ -26,5 +26,10 @@ export const dashboardApi = {
     async sendOrder(orderData: { codfor: number; tipped: string; items: any[] }) {
         const response = await api.post('/orders/send', orderData);
         return response.data;
+    },
+
+    async markNoOrder(codfor: number, tipped: string) {
+        // Enviamos como um objeto no segundo parâmetro do post
+        return api.post('/orders/no-order', { codfor, tipped });
     }
 };

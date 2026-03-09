@@ -13,7 +13,7 @@ export const TabelaItens = ({ isOpen, onClose, vendorName, items, onSave }: any)
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/90 backdrop-blur-sm"
         />
 
         {/* Modal Content: Estilo Liquid Glass */}
@@ -32,8 +32,8 @@ export const TabelaItens = ({ isOpen, onClose, vendorName, items, onSave }: any)
               <thead>
                 <tr className="text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-white/5">
                   <th className="pb-4">Produto</th>
-                  <th className="pb-4">Embalagem</th>
-                  <th className="pb-4 w-32">Quantidade</th>
+                  <th className="pb-4 text-center">Embalagem</th>
+                  <th className="pb-4 w-32 text-center">Quantidade</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -45,7 +45,7 @@ export const TabelaItens = ({ isOpen, onClose, vendorName, items, onSave }: any)
                         <span className="text-[10px] text-slate-500">Ref: {item.productCode}</span>
                       </div>
                     </td>
-                    <td className="py-4 text-slate-400 text-sm">{item.unitLiteral}</td>
+                    <td className="py-4 text-slate-400 text-sm text-center">{item.unitLiteral}</td>
                     <td className="py-4">
                       <input 
                         type="number"

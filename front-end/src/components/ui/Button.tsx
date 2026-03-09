@@ -18,15 +18,15 @@ export const ActionButton = ({ children, variant, onClick, disabled, className }
 
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={!disabled ? { scale: 1.05 } : {}}
+      whileTap={!disabled ? { scale: 0.95 } : {}}
       onClick={onClick}
       disabled={disabled}
       className={`
         px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest 
         transition-all duration-200 flex items-center justify-center gap-2
-        disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
         ${variants[variant]} 
+        ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : ''} // Estilo desativado
         ${className}
       `}
     >
