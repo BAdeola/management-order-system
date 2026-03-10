@@ -2,30 +2,51 @@
 
 @layer base {
   :root {
-    /* ESTÉTICA APPLE LIQUID GLASS - ORANGE EDITION */
-    color-scheme: dark; /* Para o vidro branco contrastar bem */
+    /* --- MODO CLARO (APPLE FROSTED GLASS) --- */
+    color-scheme: light;
+    --bg-base: #F5F5F7;
 
-    --bg-base: #000000;
+    /* Paleta Líquida */
+    --bg-liquid-start: #ffedd5;
+    --bg-liquid-mid: #fb923c;
+    --bg-liquid-end: #f97316;
 
-    /* Paleta Líquida Vibrante (Saturada para brilhar atrás do vidro) */
-    --bg-liquid-start: #fb923c; /* Orange 400 */
-    --bg-liquid-mid: #f97316;   /* Orange 500 */
-    --bg-liquid-end: #78350f;   /* Amber 900 (Profundidade) */
-
-    /* Marca (Laranja Puro Apple-like) */
-    --brand-primary: #f97316;     
+    /* Marca */
+    --brand-primary: #f97316; 
     --brand-primary-hover: #ea580c;
 
-    /* Textos (Branco puro para ler sobre o Laranja vibrante) */
+    /* Textos */
+    --text-primary: #1d1d1f;
+    --text-secondary: #424245;
+    --text-muted: #86868b;
+    
+    /* Superfícies */
+    --surface-modal: #ffffff; /* BRANCO SÓLIDO: Mata o cinza no Light Mode */
+    --surface-primary: rgba(255, 255, 255, 0.4); /* Vidro jateado para o resto */
+    --surface-secondary: rgba(0, 0, 0, 0.05);
+
+    /* Bordas */
+    --border-default: rgba(0, 0, 0, 0.08);
+  }
+
+  .dark {
+    /* --- MODO ESCURO (LIQUID DARK) --- */
+    color-scheme: dark;
+    --bg-base: #000000;
+    --bg-liquid-start: #fb923c;
+    --bg-liquid-mid: #f97316;
+    --bg-liquid-end: #78350f;
+
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.8);
     --text-muted: rgba(255, 255, 255, 0.4);
 
-    /* O SEGREDO DO VIDRO LÍQUIDO (Extremamente Translúcido) */
-    --surface-primary: rgba(255, 255, 255, 0.03); /* Quase invisível */
-    --surface-secondary: rgba(0, 0, 0, 0.2);     /* Inputs */
-    
-    /* SPECULAR HIGHLIGHT: Borda finíssima e branca */
+    /* O SEGREDO ESTAVA AQUI: */
+    /* No modo escuro, o "modal" volta a ser vidro transparente */
+    --surface-modal: rgba(255, 255, 255, 0.03); 
+    --surface-primary: rgba(255, 255, 255, 0.03);
+    --surface-secondary: rgba(0, 0, 0, 0.2);
+
     --border-default: rgba(255, 255, 255, 0.08);
   }
 }
@@ -33,13 +54,12 @@
 @theme {
   --color-brand: var(--brand-primary);
   --color-brand-hover: var(--brand-primary-hover);
+  --color-surface-modal: var(--surface-modal);
   --color-surface-primary: var(--surface-primary);
   --color-surface-secondary: var(--surface-secondary);
   --color-system-text-primary: var(--text-primary);
   --color-system-text-secondary: var(--text-secondary);
   --color-system-text-muted: var(--text-muted);
   --color-system-border-default: var(--border-default);
-  
-  /* Gradiente base, mas usaremos formas orgânicas no JSX */
-  --background-image-gradient-main: linear-gradient(135deg, var(--bg-liquid-start), var(--bg-liquid-mid), var(--bg-liquid-end));
+  --color-bg-base: var(--bg-base);
 }

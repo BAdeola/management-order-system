@@ -1,54 +1,39 @@
 import { motion } from "framer-motion";
-import { Sun, Moon } from "lucide-react";
-import { useState } from "react";
+// No topo do Header.tsx ou Sidebar.tsx
+import { Menu, Sun, Moon } from "lucide-react";
+import { useTheme } from "../../hooks/useTheme"; // Importe o hook
 
-const Header = () => {
-    const [isDark, setIsDark] = useState(false);
-    
-    return (
-        <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full flex items-center justify-between py-6 px-4 md:px-0"
+const Header = ({ onOpenMenu }: { onOpenMenu: () => void }) => {
+  const { isDark, toggleTheme } = useTheme();
+
+  return (
+    <motion.header className="w-full flex items-center justify-between py-6 px-4 lg:px-8">
+      <div className="flex items-center gap-4">
+        {/* Botão Menu Mobile: Oculto em lg (desktop) */}
+        <button 
+          onClick={onOpenMenu}
+          className="lg:hidden p-2 rounded-xl bg-surface-primary border border-system-border-default text-brand"
         >
-            {/* Lado Esquerdo: Saudação */}
-            <h2 className="flex items-center gap-3 text-2xl md:text-3xl font-extrabold text-system-text-primary tracking-tighter">
-                <span>
-                Olá, <span className="text-brand opacity-90">Brayan</span>
-                </span>
-                
-                {/* Correção do erro de display */}
-                <motion.span
-                className="inline-block cursor-default select-none"
-                animate={{ rotate: [0, 20, 0, 20, 0] }}
-                transition={{ 
-                    duration: 1.5, 
-                    repeat: Infinity, 
-                    repeatDelay: 2.5, 
-                    ease: "easeInOut" 
-                }}
-                style={{ originX: 0.7, originY: 0.7 }}
-                >
-                👋
-                </motion.span>
-            </h2>
+          {/* Esse é o ícone que vem da biblioteca Lucide */}
+          <Menu size={24} strokeWidth={2.5} />
+        </button>
 
-            {/* Lado Direito: Toggle de Tema (Liquid Style) */}
-            <motion.button
-                onClick={() => setIsDark(!isDark)}
-                whileHover={{ scale: 1.1, backgroundColor: "var(--surface-hover)" }}
-                whileTap={{ scale: 0.9 }}
-                className="p-3 rounded-2xl bg-surface-primary border border-system-border-default backdrop-blur-md text-brand shadow-sm cursor-pointer transition-colors"
-            >
-                {isDark ? (
-                <Sun size={20} strokeWidth={2.5} />
-                ) : (
-                <Moon size={20} strokeWidth={2.5} />
-                )}
-            </motion.button>
-        </motion.header>
-    )
+        <h2 className="text-xl md:text-3xl font-extrabold text-system-text-primary tracking-tighter">
+          Olá, <span className="text-brand opacity-90">Brayan</span>
+          <span className="inline-block ml-2">👋</span>
+        </h2>
+      </div>
+
+      <motion.button
+        onClick={toggleTheme} // Usa a função do hook
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="p-3 rounded-2xl bg-surface-primary border border-system-border-default backdrop-blur-md text-brand shadow-sm transition-all duration-300"
+      >
+        {isDark ? <Sun size={20} strokeWidth={2.5} /> : <Moon size={20} strokeWidth={2.5} />}
+      </motion.button>
+    </motion.header>
+  );
 }
 
-export default Header
+export default Header;

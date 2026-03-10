@@ -1,43 +1,28 @@
-import { motion } from "framer-motion";
-import type { StatusCardProps, TabelaPedidosProps } from "./interfaces";
+import type { TabelaPedidosProps } from "./interfaces";
 import { ActionButton } from "../../../../components/ui/Button";
 
-// Componente para os cards de métricas no topo do dashboard
-export const StatusCard = ({ label, value }: StatusCardProps) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="bg-surface-primary border border-system-border-default backdrop-blur-xl p-6 rounded-4xl shadow-sm flex flex-col gap-1 min-w-50"
-  >
-    <span className="text-system-text-muted text-xs font-bold uppercase tracking-widest">{label}</span>
-    <span className="text-3xl font-black text-brand">{value}</span>
-  </motion.div>
-);
+// 1. Mapeamento de Cores Consolidado
+const getStatusClasses = (statusValue: string | null) => {
+  const status = statusValue?.trim().toUpperCase() || "";
 
-// Função auxiliar para mapear o status do SQL Server 2005 para o visual do Front-end
-const getStatusClasses = (orderStatus: string | null) => {
-  const status = orderStatus?.trim().toUpperCase();
-
-  // Se for nulo, ou não tiver status, é porque ainda não foi feito pedido
-  if (!status || status === 'ABERTO') {
-    // Note que separei a cor aqui: Laranja para "Novo"
-    return 'bg-orange-500/10 text-orange-500 border border-orange-500/20';
+  // VERMELHO: Pendência Total (Não foi feito nada ainda)
+  if (status === "" || status === "NÃO EFETUADO" || status === "PEDIDO NÃO EFETUADO") {
+    return "bg-red-500/10 text-red-500 border border-red-500/20";
   }
 
-  // Amarelo: Processando
-  if (['AGUARANDO ENVIO', 'AGUARDANDO ENVIO', 'AGUARDANDO LIBERACAO', 'AGUARDANDO LIBERAÇÃO'].includes(status)) {
+  // AMARELO: Em processo (Mas já bloqueado para novas ações no Front)
+  if (['ABERTO', 'AGUARDANDO ENVIO', 'AGUARDANDO LIBERACAO', 'PEDIDO ESPERANDO ENVIO PARA O CD'].includes(status)) {
     return 'bg-yellow-500/10 text-yellow-600 border border-yellow-500/20';
   }
 
-  // Verde: Concluído
-  if (status === 'FINALIZADO') {
+  // VERDE: Ciclo completo
+  if (['FINALIZADO', 'PEDIDO ENVIADO'].includes(status)) {
     return 'bg-green-500/10 text-green-600 border border-green-500/20';
   }
 
-  // Cinza: Cancelado ou Recusado
-  // Adicionei 'CANCELADA' porque vi na sua imagem do banco
-  if (['CANCELADO', 'CANCELADA', 'NÃO TEM PEDIDO'].includes(status)) {
-    return 'bg-gray-500/10 text-gray-500 border border-gray-500/20';
+  // CINZA: Encerrado (Cancelado ou Recusado)
+  if (['CANCELADO', 'CANCELADA', 'NÃO TEM PEDIDO', 'RECUSADO'].includes(status)) {
+    return 'bg-gray-500/10 text-gray-400 border border-gray-500/20';
   }
 
   return 'bg-brand/10 text-brand border border-brand/20';
@@ -45,74 +30,100 @@ const getStatusClasses = (orderStatus: string | null) => {
 
 export const TabelaPedidos = ({ orders, onMakeOrder, onDeclineOrder }: TabelaPedidosProps) => {
   return (
-    <div className="bg-surface-primary border border-system-border-default backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
-      <table className="w-full text-left border-collapse">
+    <div className="bg-surface-primary border border-system-border-default backdrop-blur-xl rounded-2xl shadow-sm overflow-x-auto custom-scrollbar">
+      {/* table-fixed: Força o navegador a respeitar as larguras que definirmos.
+        min-w-[800px]: Garante que em telas muito pequenas a tabela não vire um "acordeão", permitindo scroll horizontal.
+      */}
+      <table className="w-full text-left border-collapse table-fixed min-w-175 md:min-w-full">
         <thead>
           <tr className="border-b border-system-border-default">
-            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted">Fornecedor</th>
-            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">Data</th>
-            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">Situação</th>
-            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">Criado Por</th>
-            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">Ações</th>
+            {/* Largura flexível: Fornecedor ocupa o que sobrar */}
+            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted">
+              Fornecedor
+            </th>
+            
+            {/* Larguras fixas para colunas de dados curtos */}
+            <th className="w-30 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center hidden sm:table-cell">
+              Data
+            </th>
+            
+            <th className="w-45 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">
+              Situação
+            </th>
+            
+            <th className="w-35 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center hidden lg:table-cell">
+              Criado Por
+            </th>
+            
+            {/* Ações precisa de espaço para os dois botões */}
+            <th className="w-55 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">
+              Ações
+            </th>
           </tr>
         </thead>
+        
         <tbody className="divide-y divide-system-border-default/50">
           {orders.map((order) => {
+            const cleanStatus = order.orderStatus?.trim().toUpperCase() || null;
+            const cleanDesc = order.statusDescription?.trim().toUpperCase() || "";
+            const isPending = !cleanStatus || cleanDesc === "NÃO EFETUADO" || cleanDesc === "PEDIDO NÃO EFETUADO";
             
-            // 2. A Lógica de Desativação
-            const rawStatus = order.orderStatus?.trim().toUpperCase();
-            const canInteract = !rawStatus || rawStatus === 'ABERTO';
-            const isActionDisabled = !canInteract;
+            const getDisplayLabel = () => {
+              if (isPending) return "PEDIDO NÃO EFETUADO";
+              if (cleanStatus === "NÃO TEM PEDIDO") return "RECUSADO";
+              if (cleanStatus === "AGUARDANDO ENVIO") return "PEDIDO ENVIADO";
+              if (cleanStatus === "ABERTO") return "PEDIDO EM ABERTO";
+              return order.statusDescription || cleanStatus;
+            };
 
             return (
               <tr key={order.vendorCode} className="hover:bg-brand/5 transition-colors group">
-                {/* Fornecedor e Código */}
-                <td className="p-6">
+                <td className="p-6 overflow-hidden">
                   <div className="flex flex-col">
-                    <span className="text-system-text-primary font-bold">{order.vendorName}</span>
-                    <span className="text-[10px] text-system-text-muted uppercase tracking-tighter">Cod: {order.vendorCode}</span>
+                    <span className="text-system-text-primary font-bold truncate" title={order.vendorName}>
+                      {order.vendorName}
+                    </span>
+                    <span className="text-[10px] text-system-text-muted uppercase tracking-tighter">
+                      Cod: {order.vendorCode}
+                    </span>
                   </div>
                 </td>
 
-                {/* Data Formatada (Vem do SQL como String 103) */}
-                <td className="p-6 text-system-text-secondary text-sm text-center">
+                <td className="p-6 text-center text-system-text-secondary text-sm hidden sm:table-cell whitespace-nowrap">
                   {order.dateLabel}
                 </td>
 
-                {/* Status Badge (Tradução da lógica do COBOL) */}
                 <td className="p-6 text-center">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase inline-block ${getStatusClasses(order.orderStatus)}`}>
-                    {order.statusDescription}
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase inline-block whitespace-nowrap ${getStatusClasses(cleanStatus || cleanDesc)}`}>
+                    {getDisplayLabel()}
                   </span>
                 </td>
 
-                {/* Criado Por */}
-                <td className="p-6 text-system-text-secondary text-sm text-center">
-                  {order.createdBy}
+                <td className="p-6 text-center text-system-text-secondary text-sm hidden lg:table-cell">
+                  {order.createdBy || '-'}
                 </td>
 
-                {/* Coluna de Ações: Fazer Pedido ou Recusar */}
                 <td className="p-6">
-                  <div className="flex items-center justify-center gap-2">
-                    <ActionButton 
-                      variant="primary" 
-                      disabled={isActionDisabled} // Agora vai considerar o trim()
-                      onClick={() => onMakeOrder(order)}
-                      className="cursor-pointer"
-                    >
-                      Fazer Pedido
-                    </ActionButton>
-                    
-                    <ActionButton 
-                      variant="secondary" 
-                      disabled={isActionDisabled}
-                      onClick={() => onDeclineOrder(order)}
-                      className="cursor-pointer"
-                    >
-                      Recusar
-                    </ActionButton>
-                  </div>
-              </td>
+                  {isPending ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <ActionButton variant="primary" onClick={() => onMakeOrder(order)}>
+                        Fazer
+                      </ActionButton>
+                      <ActionButton variant="secondary" onClick={() => onDeclineOrder(order)}>
+                        Recusar
+                      </ActionButton>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <span className="text-xs text-system-text-muted uppercase font-bold tracking-widest flex items-center justify-center gap-1 opacity-90">
+                        <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Resolvido
+                      </span>
+                    </div>
+                  )}
+                </td>
               </tr>
             );
           })}

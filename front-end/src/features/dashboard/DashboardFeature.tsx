@@ -9,36 +9,48 @@ export const DashboardFeature = () => {
     data, loading, error, loadingItems, items, stats,
     selectedVendor, setSelectedVendor,
     vendorToDecline, setVendorToDecline,
-    handleUpdateQty, handleConfirmDecline, handleSendOrder
+    handleUpdateQty, handleConfirmDecline, handleSendOrder, canSendOrder
   } = useDashboardData();
 
+  // Centralização visual para estados de loading/error
   if (loading) return (
-    <div className="p-10 text-brand animate-pulse font-black uppercase tracking-widest text-center">
+    <div className="flex h-[60vh] items-center justify-center p-10 text-brand animate-pulse font-black uppercase tracking-widest text-center">
       Sincronizando com SQL Server 2005...
     </div>
   );
 
   if (error) return (
-    <div className="p-10 text-red-500 font-bold border border-red-500/20 rounded-xl bg-red-500/5">
+    <div className="m-8 p-10 text-red-500 font-bold border border-red-500/20 rounded-xl bg-red-500/5">
       Falha na conexão: {error}
     </div>
   );
 
   return (
-    <div className="flex flex-col gap-8 p-8 min-h-screen bg-transparent">
-      {/* 1. Métricas Globais */}
-      <div className="flex gap-4">
+    /* 1. Removemos o min-h-screen (para respeitar o scroll interno do pai)
+      2. P-4 no mobile, P-8 no desktop
+    */
+    <div className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 w-full max-w-7xl mx-auto bg-transparent">
+      
+      {/* 1. Métricas Globais: Agora usando Grid Responsivo */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatusCard label="Fornecedores Liberados" value={stats.total} />
         <StatusCard label="Ações Concluídas" value={stats.concluidos} />
-        <StatusCard label="Aguardando" value={stats.pendentes} />
+        {/* Ocupa as duas colunas no tablet ou 1 no desktop */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <StatusCard label="Aguardando" value={stats.pendentes} />
+        </div>
       </div>
 
-      {/* 2. Tabela de Trabalho */}
-      <TabelaPedidos 
-        orders={data} 
-        onMakeOrder={setSelectedVendor} 
-        onDeclineOrder={setVendorToDecline}
-      />
+      {/* 2. Tabela de Trabalho: 
+          Envelopada em um container com overflow para não quebrar o layout no celular 
+      */}
+      <div className="w-full overflow-hidden">
+        <TabelaPedidos 
+          orders={data} 
+          onMakeOrder={setSelectedVendor} 
+          onDeclineOrder={setVendorToDecline}
+        />
+      </div>
 
       {/* 3. Modal de Pedido (Quantidades) */}
       <TabelaItens
@@ -49,6 +61,7 @@ export const DashboardFeature = () => {
         onClose={() => setSelectedVendor(null)}
         onSave={handleUpdateQty}
         onConfirmSend={handleSendOrder}
+        canSend={canSendOrder}
       />
 
       {/* 4. Modal de Confirmação (Recusa) */}

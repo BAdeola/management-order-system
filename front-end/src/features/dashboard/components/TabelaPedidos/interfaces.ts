@@ -10,11 +10,6 @@ export interface Order {
   orderNumber: number | null;
 }
 
-export interface StatusCardProps {
-  label: string;
-  value: number | string;
-}
-
 export interface TabelaPedidosProps {
   orders: Order[];
   onMakeOrder: (order: Order) => void;

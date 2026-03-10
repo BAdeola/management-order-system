@@ -110,7 +110,7 @@ export class OrderRepository {
       .input('codfor', mssql.Decimal(6, 0), data.codfor)
       .query(`
         INSERT INTO pedido_cd (numero, data, situac, datetime_situac, tipped, codfor, criado_por, sincronizado)
-        VALUES (@numero, GETDATE(), 'ABERTO', GETDATE(), @tipped, @codfor, 'LOJA', 'N')
+        VALUES (@numero, GETDATE(), 'AGUARDANDO ENVIO', GETDATE(), @tipped, @codfor, 'LOJA', 'N')
       `);
   }
 

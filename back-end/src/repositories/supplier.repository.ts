@@ -21,7 +21,7 @@ export class SupplierRepository {
         WHEN 5 THEN p.quinta
         WHEN 6 THEN p.sexta
         WHEN 7 THEN p.sabado
-        ELSE 0 -- Domingo (1) geralmente não há pedidos
+        ELSE 0
       END
       ORDER BY c.nomfor
     `;

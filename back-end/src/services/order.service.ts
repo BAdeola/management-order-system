@@ -31,9 +31,9 @@ export class OrderService {
                 } else {
                     if (order.situac === "NÃO TEM PEDIDO") {
                         if (order.sincronizado?.toUpperCase() === "N") {
-                            statusDescription = "AGUARDANDO ENVIO - MARCADO COMO SEM PEDIDO";
+                            statusDescription = "AGUARDANDO ENVIO";
                         } else {
-                            statusDescription = "FINALIZADO - MARCADO COMO SEM PEDIDO";
+                            statusDescription = "FINALIZADO";
                         }
                     } else {
                         statusDescription = `PEDIDO Nº ${order.numero} GERADO - STATUS ATUAL : ${order.situac}`;

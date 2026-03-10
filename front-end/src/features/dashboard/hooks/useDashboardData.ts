@@ -16,12 +16,17 @@ export function useDashboardData() {
 
   // --- Hook de Itens Integrado ---
   const { items, setItems, loading: loadingItems } = useOrderItems(selectedVendor?.vendorCode || null);
+  const canSendOrder = useMemo(() => {
+    return items.some(item => item.quantity > 0);
+  }, [items]);
 
   // --- Busca de Dados ---
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (isSilent = false) => {
     try {
-      setLoading(true);
-      setError(null);
+      // isSilent serve para atualizar em background sem mostrar o 
+      // "Carregando..." gigante na tela, se você preferir.
+      if (!isSilent) setLoading(true); 
+      
       const result = await dashboardApi.getOrders();
       setData(result as Order[]);
     } catch (err: any) {
@@ -32,7 +37,29 @@ export function useDashboardData() {
   }, []);
 
   useEffect(() => {
+    // Busca inicial
     fetchData();
+
+    // Configura o intervalo para atualizar a cada 30 minutos
+    const TRINTA_MINUTOS = 30 * 60 * 1000;
+    const interval = setInterval(() => {
+      console.log("Polling: Atualizando dados silenciosamente...");
+      fetchData(true); // isSilent = true para não mostrar o loading na tela toda
+    }, TRINTA_MINUTOS);
+
+    // Limpeza: remove o intervalo se o gerente fechar o dashboard
+    return () => clearInterval(interval);
+  }, [fetchData]);
+
+  // 2. Refresh ao Voltar para a Aba (Focus)
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log("Focus: Gerente voltou, atualizando...");
+      fetchData(true);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, [fetchData]);
 
   // --- Handlers (Lógica de Negócio) ---
@@ -95,11 +122,17 @@ export function useDashboardData() {
   // --- Métricas Calculadas (Memoized para performance) ---
   const stats = useMemo(() => {
     const total = data.length;
-    const concluidos = data.filter(o => o.orderStatus === 'FINALIZADO' || o.orderStatus === 'NÃO TEM PEDIDO').length;
+    const pendentes = data.filter(o => {
+      const rawStatus = o.orderStatus?.trim().toUpperCase() || "";
+      const rawDesc = o.statusDescription?.trim().toUpperCase() || "";
+      // Segue a mesma lógica da tabela: é pendente se não tem pedido feito
+      return !rawStatus || rawDesc === "NÃO EFETUADO" || rawDesc === "PEDIDO NÃO EFETUADO";
+    }).length;
+
     return {
       total,
-      concluidos,
-      pendentes: total - concluidos
+      pendentes,
+      concluidos: total - pendentes
     };
   }, [data]);
 
@@ -111,6 +144,7 @@ export function useDashboardData() {
     loadingItems,
     items,
     stats,
+    canSendOrder,
     
     // Estados de Seleção
     isSubmitting,
