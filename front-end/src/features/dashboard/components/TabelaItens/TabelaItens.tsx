@@ -42,13 +42,19 @@ export const TabelaItens = ({
                     </div>
 
                     {/* Área da Tabela Responsiva */}
-                    <div className="flex-1 overflow-auto p-4 md:p-8 custom-scrollbar">
+                    <div className="flex-1 overflow-auto pt-0 p-4 md:p-8 custom-scrollbar">
                         <table className="w-full text-left border-collapse min-w-125">
-                            <thead className="sticky top-0 bg-white dark:bg-surface-primary z-10">
-                                <tr className="text-system-text-muted text-[10px] font-bold uppercase tracking-widest border-b border-system-border-default">
-                                    <th className="pb-4">Produto</th>
-                                    <th className="pb-4 text-center">Emb.</th>
-                                    <th className="pb-4 w-28 md:w-32 text-center">Qtd</th>
+                            <thead className="top-0 bg-surface-modal z-20">
+                                <tr className="border-b border-white/5 text-system-text-secondary">
+                                    <th className="py-4 px-2 text-left text-[11px] font-semibold uppercase tracking-widest">
+                                        Produto
+                                    </th>
+                                    <th className="py-4 px-2 text-center text-[11px] font-semibold uppercase tracking-widest">
+                                        Emb.
+                                    </th>
+                                    <th className="py-4 px-2 w-28 md:w-32 text-center text-[11px] font-semibold uppercase tracking-widest">
+                                        Qtd
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-system-border-default/30">
