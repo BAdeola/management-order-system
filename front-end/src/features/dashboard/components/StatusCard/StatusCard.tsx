@@ -5,16 +5,26 @@ export const StatusCard = ({ label, value }: StatusCardProps) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    // Trocamos bg-white/5 e border-white/10 pelas nossas variáveis de sistema
-    className="flex-1 bg-surface-primary border border-system-border-default backdrop-blur-md p-6 rounded-3xl shadow-xl flex flex-col gap-1 transition-colors duration-300"
+    className="
+      /* Layout Base e Quadrado no Mobile */
+      flex-1 aspect-square md:aspect-auto 
+      flex flex-col items-center justify-center md:items-start md:justify-start
+      
+      /* Estilo */
+      bg-surface-primary border border-system-border-default backdrop-blur-md 
+      p-2 md:p-6 rounded-2xl md:rounded-3xl shadow-xl 
+      transition-colors duration-300 gap-1
+    "
   >
-    {/* Label: Agora usa a cor Muted do tema (Cinza no Light / Transparente no Dark) */}
-    <span className="text-system-text-muted text-[10px] font-bold uppercase tracking-[0.2em]">
+    <span className="
+      text-system-text-muted text-[12px] md:text-sm
+      font-bold uppercase tracking-tighter md:tracking-[0.2em]
+      text-center md:text-left leading-tight max-w-full wrap-break-word
+    ">
       {label}
     </span>
-    
-    {/* Value: Trocamos text-white por text-system-text-primary ou text-brand */}
-    <span className="text-3xl font-black text-system-text-primary">
+
+    <span className="text-3xl md:text-4xl font-black text-system-text-primary leading-none">
       {value}
     </span>
   </motion.div>

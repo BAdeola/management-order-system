@@ -1,10 +1,8 @@
 export interface Order {
   vendorCode: number;
-  vendorName: string;        
-  dateLabel: string;         
+  vendorName: string;         
   statusDescription: string; 
-  orderStatus: string;      
-  createdBy: string;
+  orderStatus: string;
   vendorType: string;
   orderType: string;
   orderNumber: number | null;

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, X } from "lucide-react"; // Importe o X
+import { LayoutDashboard, X, LogOut } from "lucide-react"; // Importado LogOut
+import { authApi } from "../../services/api"; // Importando a lógica de logout
 import type { SidebarItemProps, SidebarProps } from "./interfaces";
 import logo from "../../assets/logobaffs.png";
 
@@ -52,9 +53,6 @@ const Sidebar = ({ isMobileOpen, onClose }: SidebarProps) => {
         layout
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        // LÓGICA DE ANIMAÇÃO:
-        // No Mobile: desliza de -100% para 0.
-        // No Desktop: expande a largura de 80px para 260px.
         initial={false}
         animate={{ 
           width: isMobileOpen ? "280px" : (isCollapsed ? "80px" : "260px"),
@@ -68,6 +66,15 @@ const Sidebar = ({ isMobileOpen, onClose }: SidebarProps) => {
           ${isMobileOpen ? "flex" : "hidden lg:flex"}
         `}
       >
+        {/* BOTÃO LOGOUT: Posicionado no topo esquerdo */}
+        <button 
+          onClick={() => authApi.logout()}
+          title="Sair do sistema"
+          className="flex items-center justify-center w-10 h-10 mb-2 rounded-xl text-system-text-muted hover:text-red-500 hover:bg-red-500/10 transition-all group outline-none"
+        >
+          <LogOut size={20} strokeWidth={2.5} className="group-hover:-translate-x-0.5 transition-transform" />
+        </button>
+
         {/* Botão de Fechar (Apenas Mobile) */}
         <button 
           onClick={onClose}
@@ -94,15 +101,14 @@ const Sidebar = ({ isMobileOpen, onClose }: SidebarProps) => {
         <motion.nav layout className="flex flex-col gap-2 flex-1">
           <SidebarItem 
             icon={LayoutDashboard} 
-            label="Dashboard" 
-            // No mobile, nunca colapsa o item para facilitar o clique
+            label="Pedidos" 
             isCollapsed={isMobileOpen ? false : isCollapsed} 
             active 
           />
         </motion.nav>
       </motion.aside>
 
-      {/* Overlay: Escurece o fundo quando o menu abre no celular */}
+      {/* Overlay Mobile */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div 

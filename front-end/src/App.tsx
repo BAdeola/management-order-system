@@ -1,12 +1,9 @@
-import './App.css'
-//import Login from './features/Login/Login'
-import TabelaPedidosScreen from './pages/TabelaPedidosPage/TabelaPedidosScreen'
+import './App.css';
+import AppRoutes from './routes/AppRoutes';
 
 function App() {
   return (
-    <>
-      <TabelaPedidosScreen />
-    </>
+    <AppRoutes />
   )
 }
 

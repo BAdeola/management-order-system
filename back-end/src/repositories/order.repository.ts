@@ -82,6 +82,7 @@ export class OrderRepository {
     return result.recordset;
   }
 
+  // Aqui pegamos os pedidos por fornecedor que devem ser feitos no dia de hoje
   async getOrdersBySupplierToday(codfor: number): Promise<any[]> {
     const pool = await poolPromise;
     const result = await pool.request()
@@ -91,8 +92,7 @@ export class OrderRepository {
           numero, 
           situac, 
           sincronizado, 
-          tipped, 
-          data as dataOriginal
+          tipped
         FROM pedido_cd
         WHERE codfor = @codfor 
           AND criado_por = 'LOJA'

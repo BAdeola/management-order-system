@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/SideBar/SideBar";
-import type { MenuLayoutProps } from "./interfaces";
+import { Outlet } from "react-router-dom";
 
-const MenuLayout = ({ children }: MenuLayoutProps) => {
+const MenuLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -19,7 +19,7 @@ const MenuLayout = ({ children }: MenuLayoutProps) => {
         <Header onOpenMenu={() => setIsMobileMenuOpen(true)} />
 
         <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-          {children}
+          <Outlet />
         </main>
       </div>
 

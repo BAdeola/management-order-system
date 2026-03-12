@@ -42,9 +42,7 @@ export class OrderService {
 
                 return {
                     vendorName: supplier.nomfor,
-                    dateLabel: todayLabel,
                     statusDescription,
-                    createdBy: "LOJA",
                     vendorCode: supplier.codfor,
                     orderType: order?.tipped || "",
                     rawDate: order?.dataOriginal || null,

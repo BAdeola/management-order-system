@@ -30,39 +30,19 @@ const getStatusClasses = (statusValue: string | null) => {
 
 export const TabelaPedidos = ({ orders, onMakeOrder, onDeclineOrder }: TabelaPedidosProps) => {
   return (
-    <div className="bg-surface-primary border border-system-border-default backdrop-blur-xl rounded-2xl shadow-sm overflow-x-auto custom-scrollbar">
-      {/* table-fixed: Força o navegador a respeitar as larguras que definirmos.
-        min-w-[800px]: Garante que em telas muito pequenas a tabela não vire um "acordeão", permitindo scroll horizontal.
-      */}
-      <table className="w-full text-left border-collapse table-fixed min-w-175 md:min-w-full">
-        <thead>
+    <div className="bg-surface-primary border border-system-border-default backdrop-blur-xl rounded-2xl shadow-sm overflow-hidden">
+      <table className="w-full text-left border-collapse">
+        {/* O cabeçalho só faz sentido no Desktop, então escondemos no mobile */}
+        <thead className="hidden md:table-header-group">
           <tr className="border-b border-system-border-default">
-            {/* Largura flexível: Fornecedor ocupa o que sobrar */}
-            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted">
-              Fornecedor
-            </th>
-            
-            {/* Larguras fixas para colunas de dados curtos */}
-            <th className="w-30 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center hidden sm:table-cell">
-              Data
-            </th>
-            
-            <th className="w-45 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">
-              Situação
-            </th>
-            
-            <th className="w-35 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center hidden lg:table-cell">
-              Criado Por
-            </th>
-            
-            {/* Ações precisa de espaço para os dois botões */}
-            <th className="w-55 p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">
-              Ações
-            </th>
+            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted">Fornecedor</th>
+            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center">Situação</th>
+            <th className="p-6 text-xs font-bold uppercase tracking-widest text-system-text-muted text-center" />
           </tr>
         </thead>
         
-        <tbody className="divide-y divide-system-border-default/50">
+        {/* No mobile, o tbody não deve forçar o layout de tabela */}
+        <tbody className="flex flex-col md:table-row-group divide-y divide-system-border-default/50">
           {orders.map((order) => {
             const cleanStatus = order.orderStatus?.trim().toUpperCase() || null;
             const cleanDesc = order.statusDescription?.trim().toUpperCase() || "";
@@ -77,10 +57,13 @@ export const TabelaPedidos = ({ orders, onMakeOrder, onDeclineOrder }: TabelaPed
             };
 
             return (
-              <tr key={order.vendorCode} className="hover:bg-brand/5 transition-colors group">
-                <td className="p-6 overflow-hidden">
+              /* TR: Vira um container flexível no mobile para empilhar os itens */
+              <tr key={order.vendorCode} className="flex flex-col md:table-row hover:bg-brand/5 transition-colors group p-4 md:p-0 gap-3 md:gap-0">
+                
+                {/* 1. Fornecedor: Sempre no topo */}
+                <td className="md:p-6 block md:table-cell">
                   <div className="flex flex-col">
-                    <span className="text-system-text-primary font-bold truncate" title={order.vendorName}>
+                    <span className="text-system-text-primary font-bold text-lg md:text-base">
                       {order.vendorName}
                     </span>
                     <span className="text-[10px] text-system-text-muted uppercase tracking-tighter">
@@ -89,32 +72,27 @@ export const TabelaPedidos = ({ orders, onMakeOrder, onDeclineOrder }: TabelaPed
                   </div>
                 </td>
 
-                <td className="p-6 text-center text-system-text-secondary text-sm hidden sm:table-cell whitespace-nowrap">
-                  {order.dateLabel}
-                </td>
-
-                <td className="p-6 text-center">
+                {/* 2. Situação: Abaixo do fornecedor no mobile */}
+                <td className="md:p-6 block md:table-cell md:text-center">
                   <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase inline-block whitespace-nowrap ${getStatusClasses(cleanStatus || cleanDesc)}`}>
                     {getDisplayLabel()}
                   </span>
                 </td>
 
-                <td className="p-6 text-center text-system-text-secondary text-sm hidden lg:table-cell">
-                  {order.createdBy || '-'}
-                </td>
-
-                <td className="p-6">
+                {/* 3. Ações: No final da "pilha" no mobile */}
+                <td className="md:p-6 block md:table-cell">
                   {isPending ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <ActionButton variant="primary" onClick={() => onMakeOrder(order)}>
-                        Fazer
+                    /* Botões ocupam largura total no mobile para facilitar o toque */
+                    <div className="flex items-center justify-center md:justify-center gap-2 w-full">
+                      <ActionButton variant="primary" onClick={() => onMakeOrder(order)} className="flex-1 md:flex-none">
+                        Fazer Pedido
                       </ActionButton>
-                      <ActionButton variant="secondary" onClick={() => onDeclineOrder(order)}>
+                      <ActionButton variant="secondary" onClick={() => onDeclineOrder(order)} className="flex-1 md:flex-none">
                         Recusar
                       </ActionButton>
                     </div>
                   ) : (
-                    <div className="text-center">
+                    <div className="text-center md:text-center py-2 md:py-0">
                       <span className="text-xs text-system-text-muted uppercase font-bold tracking-widest flex items-center justify-center gap-1 opacity-90">
                         <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />

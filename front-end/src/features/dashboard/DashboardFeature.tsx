@@ -32,13 +32,11 @@ export const DashboardFeature = () => {
     <div className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 w-full max-w-7xl mx-auto bg-transparent">
       
       {/* 1. Métricas Globais: Agora usando Grid Responsivo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* 1. Métricas Globais: Forçando 3 colunas no mobile */}
+      <div className="grid grid-cols-3 gap-2 md:gap-8">
         <StatusCard label="Fornecedores Liberados" value={stats.total} />
         <StatusCard label="Ações Concluídas" value={stats.concluidos} />
-        {/* Ocupa as duas colunas no tablet ou 1 no desktop */}
-        <div className="sm:col-span-2 lg:col-span-1">
-          <StatusCard label="Aguardando" value={stats.pendentes} />
-        </div>
+        <StatusCard label="Aguardando" value={stats.pendentes} />
       </div>
 
       {/* 2. Tabela de Trabalho: 

@@ -12,6 +12,22 @@ export const api = axios.create({
     },
 });
 
+// --- AUTENTICAÇÃO ---
+export const authApi = {
+    
+    async login(apelid: string, senha: string): Promise<{ nome: string; apelido: string }> {
+        // Chamada para a rota que configuramos no Express
+        const response = await api.post('/login', { apelid, senha });
+        return response.data;
+    },
+
+    logout() {
+        localStorage.removeItem('@Baffs:user');
+        window.location.href = import.meta.env.BASE_URL; // Redireciona bruto para resetar o estado
+    }
+};
+
+// --- DASHBOARD ---
 export const dashboardApi = {
     async getOrders(): Promise<any[]> {
         const response = await api.get('/orders/dashboard');
@@ -29,7 +45,6 @@ export const dashboardApi = {
     },
 
     async markNoOrder(codfor: number, tipped: string) {
-        // Enviamos como um objeto no segundo parâmetro do post
         return api.post('/orders/no-order', { codfor, tipped });
     }
 };
