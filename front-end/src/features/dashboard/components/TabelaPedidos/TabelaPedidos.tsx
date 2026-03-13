@@ -46,64 +46,70 @@ export const TabelaPedidos = ({ orders, onMakeOrder, onDeclineOrder }: TabelaPed
           {orders.map((order) => {
             const cleanStatus = order.orderStatus?.trim().toUpperCase() || null;
             const cleanDesc = order.statusDescription?.trim().toUpperCase() || "";
+
+            // Flags de estado
             const isPending = !cleanStatus || cleanDesc === "NÃO EFETUADO" || cleanDesc === "PEDIDO NÃO EFETUADO";
-            
+            const isSent = ['FINALIZADO', 'PEDIDO ENVIADO', 'AGUARDANDO ENVIO', 'PEDIDO ESPERANDO ENVIO PARA O CD'].includes(cleanStatus || "");
+
             const getDisplayLabel = () => {
-              if (isPending) return "PEDIDO NÃO EFETUADO";
-              if (cleanStatus === "NÃO TEM PEDIDO") return "RECUSADO";
-              if (cleanStatus === "AGUARDANDO ENVIO") return "PEDIDO ENVIADO";
-              if (cleanStatus === "ABERTO") return "PEDIDO EM ABERTO";
-              return order.statusDescription || cleanStatus;
+                if (isPending) return "PEDIDO NÃO EFETUADO";
+                if (cleanStatus === "NÃO TEM PEDIDO") return "RECUSADO";
+                if (cleanStatus === "AGUARDANDO ENVIO") return "PEDIDO ENVIADO";
+                if (cleanStatus === "ABERTO") return "PEDIDO EM ABERTO";
+                return order.statusDescription || cleanStatus;
             };
 
             return (
-              /* TR: Vira um container flexível no mobile para empilhar os itens */
               <tr key={order.vendorCode} className="flex flex-col md:table-row hover:bg-brand/5 transition-colors group p-4 md:p-0 gap-3 md:gap-0">
-                
-                {/* 1. Fornecedor: Sempre no topo */}
-                <td className="md:p-6 block md:table-cell">
-                  <div className="flex flex-col">
-                    <span className="text-system-text-primary font-bold text-lg md:text-base">
-                      {order.vendorName}
-                    </span>
-                    <span className="text-[10px] text-system-text-muted uppercase tracking-tighter">
-                      Cod: {order.vendorCode}
-                    </span>
-                  </div>
-                </td>
+                  
+                  {/* 1. Fornecedor */}
+                  <td className="md:p-6 block md:table-cell">
+                      <div className="flex flex-col">
+                          <span className="text-system-text-primary font-bold text-lg md:text-base">
+                              {order.vendorName}
+                          </span>
+                          <span className="text-[10px] text-system-text-muted uppercase tracking-tighter">
+                              Cod: {order.vendorCode}
+                          </span>
+                      </div>
+                  </td>
 
-                {/* 2. Situação: Abaixo do fornecedor no mobile */}
-                <td className="md:p-6 block md:table-cell md:text-center">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase inline-block whitespace-nowrap ${getStatusClasses(cleanStatus || cleanDesc)}`}>
-                    {getDisplayLabel()}
-                  </span>
-                </td>
-
-                {/* 3. Ações: No final da "pilha" no mobile */}
-                <td className="md:p-6 block md:table-cell">
-                  {isPending ? (
-                    /* Botões ocupam largura total no mobile para facilitar o toque */
-                    <div className="flex items-center justify-center md:justify-center gap-2 w-full">
-                      <ActionButton variant="primary" onClick={() => onMakeOrder(order)} className="flex-1 md:flex-none">
-                        Fazer Pedido
-                      </ActionButton>
-                      <ActionButton variant="secondary" onClick={() => onDeclineOrder(order)} className="flex-1 md:flex-none">
-                        Recusar
-                      </ActionButton>
-                    </div>
-                  ) : (
-                    <div className="text-center md:text-center py-2 md:py-0">
-                      <span className="text-xs text-system-text-muted uppercase font-bold tracking-widest flex items-center justify-center gap-1 opacity-90">
-                        <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Resolvido
+                  {/* 2. Situação */}
+                  <td className="md:p-6 block md:table-cell md:text-center">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase inline-block whitespace-nowrap ${getStatusClasses(cleanStatus || cleanDesc)}`}>
+                          {getDisplayLabel()}
                       </span>
-                    </div>
-                  )}
-                </td>
+                  </td>
+
+                  {/* 3. Ações / Info Adicional */}
+                  <td className="md:p-6 block md:table-cell">
+                    {isPending ? (
+                      <div className="flex items-center justify-center gap-2 w-full">
+                        <ActionButton variant="primary" onClick={() => onMakeOrder(order)}>Fazer Pedido</ActionButton>
+                        <ActionButton variant="secondary" onClick={() => onDeclineOrder(order)}>Recusar</ActionButton>
+                      </div>
+                    ) : isSent ? (
+                      <div className="text-center py-2 md:py-0">
+                        <div className="flex flex-col items-center justify-center">
+                            <span className="text-[10px] text-system-text-muted uppercase font-bold tracking-widest opacity-70">
+                              Nº Gerado
+                            </span>
+                            <span className="text-sm text-brand font-mono font-bold">
+                              {/* Ajuste aqui para o nome real da propriedade. 
+                                Se o TS reclamar, use: (order as any).orderNumber 
+                                Apenas para a reunião de hoje!
+                              */}
+                              #{order.orderNumber || '---'}
+                            </span>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Se isDeclined for true, cai aqui e fica totalmente vazio */
+                      <div className="min-h-10 md:min-h-0" />
+                    )}
+                  </td>
               </tr>
-            );
+          );
           })}
         </tbody>
       </table>
