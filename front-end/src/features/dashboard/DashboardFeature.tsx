@@ -9,7 +9,7 @@ export const DashboardFeature = () => {
     data, loading, error, loadingItems, items, stats,
     selectedVendor, setSelectedVendor,
     vendorToDecline, setVendorToDecline,
-    handleUpdateQty, handleConfirmDecline, handleSendOrder, canSendOrder
+    handleUpdateQty, handleConfirmDecline, handleSendOrder, canSendOrder, isReadOnly
   } = useDashboardData();
 
   // Centralização visual para estados de loading/error
@@ -25,13 +25,13 @@ export const DashboardFeature = () => {
     </div>
   );
 
+  // 1. LÓGICA DE SOMENTE LEITURA ADICIONADA AQUI
+  // Verificamos se o fornecedor selecionado já tem um status de envio concluído
+  
+
   return (
-    /* 1. Removemos o min-h-screen (para respeitar o scroll interno do pai)
-      2. P-4 no mobile, P-8 no desktop
-    */
     <div className="flex flex-col gap-6 md:gap-8 p-4 md:p-8 w-full max-w-7xl mx-auto bg-transparent">
       
-      {/* 1. Métricas Globais: Agora usando Grid Responsivo */}
       {/* 1. Métricas Globais: Forçando 3 colunas no mobile */}
       <div className="grid grid-cols-3 gap-2 md:gap-8">
         <StatusCard label="Fornecedores Liberados" value={stats.total} />
@@ -60,6 +60,8 @@ export const DashboardFeature = () => {
         onSave={handleUpdateQty}
         onConfirmSend={handleSendOrder}
         canSend={canSendOrder}
+        // 2. PASSAMOS A PROP AQUI
+        isReadOnly={isReadOnly}
       />
 
       {/* 4. Modal de Confirmação (Recusa) */}

@@ -136,6 +136,10 @@ export function useDashboardData() {
     };
   }, [data]);
 
+  // Centralização visual para estados de loading/error
+  const selectedStatus = selectedVendor?.orderStatus?.trim().toUpperCase() || "";
+  const isReadOnly = ['FINALIZADO', 'PEDIDO ENVIADO', 'AGUARDANDO ENVIO', 'PEDIDO ESPERANDO ENVIO PARA O CD'].includes(selectedStatus);
+
   return {
     // Dados e Status
     data,
@@ -152,6 +156,7 @@ export function useDashboardData() {
     setSelectedVendor,
     vendorToDecline,
     setVendorToDecline,
+    isReadOnly,
     
     // Funções de Ação
     handleUpdateQty,
